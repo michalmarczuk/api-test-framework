@@ -1,0 +1,23 @@
+{
+  "name": "api-test-framework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michalmarczuk/api-test-framework.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michalmarczuk/api-test-framework/issues"
+  },
+  "homepage": "https://github.com/michalmarczuk/api-test-framework#readme",
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "type": "module"
+}
