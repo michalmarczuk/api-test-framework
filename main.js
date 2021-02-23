@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 
-class Test {
+export default class Test {
     constructor() {
         this.instance = axios.create({
             baseURL: 'http://localhost:8000',
@@ -12,11 +12,7 @@ class Test {
         });
     }
 
-    async me() {
-        const response = await this.instance.get('people');
-        console.log(response.data);
+    async people() {
+        return await this.instance.get('people');
     }
 }
-
-const test = new Test();
-test.me().then();
