@@ -1,19 +1,21 @@
 import ApiClient from '../apiClient.js'
 
 describe('Login feature', () => {
-    test('People resource without authorization', async () => {
+    test('Successful login', async () => {
         const apiClient = new ApiClient();
-        const peopleData = (await apiClient.people()).data;
+        const loginResponse = (await apiClient.login('john.connor@skynet.com', 'secret'));
 
-        expect(peopleData.status).toEqual(401);
+        expect(loginResponse.status).toEqual(200);
+        expect(loginResponse.data.status).toEqual(200);
+        expect(loginResponse.data.message).toMatch(/^.+\..+\..+$/);
     });
 
     test.each([
         ['', ''],
-        ['invalid_login', 'invalid_password'],
-    ])('Failure login: [login: "%s"][password: "%s"]', async (login, password) => {
+        ['invalid_email', 'invalid_password'],
+    ])('Failure login: [Email: "%s"][password: "%s"]', async (email, password) => {
         const apiClient = new ApiClient();
-        const loginResponse = (await apiClient.login(login, password));
+        const loginResponse = (await apiClient.login(email, password));
         
         const expectedData = {
             "status": 401,
@@ -22,5 +24,4 @@ describe('Login feature', () => {
         expect(loginResponse.status).toEqual(401);
         expect(loginResponse.data).toEqual(expectedData);
     });
-
 });
