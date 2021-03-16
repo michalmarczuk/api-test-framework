@@ -17,8 +17,10 @@
   },
   "homepage": "https://github.com/michalmarczuk/api-test-framework#readme",
   "dependencies": {
+    "ajv": "^7.2.1",
     "axios": "^0.21.1",
-    "jest-html-reporter": "^3.3.0"
+    "jest-html-reporter": "^3.3.0",
+    "jsonschema": "^1.4.0"
   },
   "type": "module",
   "devDependencies": {

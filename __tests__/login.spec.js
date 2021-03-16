@@ -1,4 +1,4 @@
-import ApiClient from '../apiClient.js'
+import ApiClient from '../lib/apiClient.js'
 
 describe('Login feature', () => {
     test('Successful login', async () => {

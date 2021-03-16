@@ -1,4 +1,4 @@
-import ApiClient from '../apiClient.js'
+import ApiClient from '../lib/apiClient.js'
 
 describe('Session token', () => {
     test('People resource without authorization', async () => {
