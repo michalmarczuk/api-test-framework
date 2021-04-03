@@ -3,7 +3,7 @@ import ApiClient from '../lib/apiClient.js'
 describe('Session token', () => {
     test('People resource without authorization', async () => {
         const apiClient = new ApiClient();
-        const peopleData = (await apiClient.people());
+        const peopleData = await apiClient.people().get();
 
         const expectedData = {
             "status": 401,
