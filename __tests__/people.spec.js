@@ -1,5 +1,5 @@
 import ApiClient from '../lib/apiClient.js'
-import People from '../lib/endpoints/people.js';
+import People from '../lib/endpoints/people/people.js';
 
 describe('People resource', () => {
     test('Get all people', async () => {
@@ -10,7 +10,8 @@ describe('People resource', () => {
 
         expect(peopleResponse.status).toEqual(200);
         expect(peopleResponse.data.length).toBeGreaterThan(0);
-        People.validateGetAllResponse(peopleResponse.data);
+        const validationErrors = People.validateGetAllResponse(peopleResponse.data).errors;
+        expect(validationErrors).toEqual([]);
     });
 
     test('Invalid additional param in get all people response', async() => {
