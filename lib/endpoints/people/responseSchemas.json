@@ -1,6 +1,6 @@
 {
-    "peopleSchema": {
-        "id": "/peopleSchema",
+    "getSchema": {
+        "id": "/getSchema",
         "type": "object",
         "properties": {
             "id": { "type": "string" },
@@ -16,10 +16,10 @@
         "required": ["id", "age", "name", "gender", "company", "email", "phone", "address", "credits"],
         "additionalProperties": false
     },
-    "allPeopleSchema": {
-        "id": "/allPeopleSchema",
+    "getAllSchema": {
+        "id": "/getAllSchema",
         "type": "array",
-        "items": {"$ref": "/peopleSchema"}
+        "items": {"$ref": "/getSchema"}
     },
     "creditsSchema": {
         "id": "/creditsSchema",

@@ -13,15 +13,4 @@ describe('People resource', () => {
         const validationErrors = People.validateGetAllResponse(peopleResponse.data).errors;
         expect(validationErrors).toEqual([]);
     });
-
-    test('Invalid additional param in get all people response', async() => {
-        const apiClient = new ApiClient();
-        await apiClient.login();
-
-        const peopleResponse = await apiClient.people().get();
-        peopleResponse.data[33].invalidAdditionalParam = 123;
-
-        const validationErrors = People.validateGetAllResponse(peopleResponse.data).errors;
-        expect(validationErrors[0].message).toEqual('is not allowed to have the additional property "invalidAdditionalParam"');
-    });
 });
