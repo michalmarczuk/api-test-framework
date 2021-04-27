@@ -1,16 +1,23 @@
-import ApiClient from '../lib/apiClient.js'
 import People from '../lib/endpoints/people/people.js';
+import { getApiClientWithSession } from '../lib/flow.js';
 
 describe('People resource', () => {
     test('Get all people', async () => {
-        const apiClient = new ApiClient();
-        await apiClient.login();
+        const apiClient = await getApiClientWithSession();
+        const getPeopleResponse = await apiClient.people().get();
 
-        const peopleResponse = await apiClient.people().get();
+        expect(getPeopleResponse.status).toEqual(200);
+        expect(getPeopleResponse.data.length).toBeGreaterThan(0);
+        expect(People.validateGetAllResponse(getPeopleResponse.data).errors).toEqual([]);
+    });
+    test.only('Post people', async () => {
+        const apiClient = await getApiClientWithSession();
+        const postPeopleReposnse = await apiClient.people().post({name: 'Jack'});
+        const getPeopleResponseData = await apiClient.people().get(postPeopleReposnse.data.id);
+        
+        console.log(getPeopleResponseData);
 
-        expect(peopleResponse.status).toEqual(200);
-        expect(peopleResponse.data.length).toBeGreaterThan(0);
-        const validationErrors = People.validateGetAllResponse(peopleResponse.data).errors;
-        expect(validationErrors).toEqual([]);
+        expect(postPeopleReposnse.status).toEqual(201);
+        // expect(getPeopleResponseData)
     });
 });
