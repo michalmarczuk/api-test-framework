@@ -19,6 +19,7 @@
   "dependencies": {
     "ajv": "^7.2.1",
     "axios": "^0.21.1",
+    "faker": "^5.5.3",
     "jest-html-reporter": "^3.3.0",
     "jsonschema": "^1.4.0"
   },
