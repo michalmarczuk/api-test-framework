@@ -1,21 +1,19 @@
-import ApiClient from '../lib/apiClient.js'
 import People from '../lib/endpoints/people/people.js';
+import { getApiClientWithSession } from '../lib/flow.js';
 
 describe('People resource', () => {
     let apiClient;
 
     beforeEach(async () => {
-        apiClient = new ApiClient();
-        await apiClient.login();
+        apiClient = await getApiClientWithSession();
     });
 
     test('Get all people', async () => {
-        const peopleResponse = await apiClient.people().get();
+        const getPeopleResponse = await apiClient.people().get();
 
-        expect(peopleResponse.status).toEqual(200);
-        expect(peopleResponse.data.length).toBeGreaterThan(0);
-        const validationErrors = People.validateGetAllResponse(peopleResponse.data).errors;
-        expect(validationErrors).toEqual([]);
+        expect(getPeopleResponse.status).toEqual(200);
+        expect(getPeopleResponse.data.length).toBeGreaterThan(0);
+        expect(People.validateGetAllResponse(getPeopleResponse.data).errors).toEqual([]);
     });
 
     test('Get people by id', async () => {
@@ -31,7 +29,7 @@ describe('People resource', () => {
             email: 'arnoldthompson@qiao.com',
             phone: '+1 (820) 420-2603',
             address: '579 Madison Street, Oneida, Virginia, 6531',
-            credits: [ { bank: 'Happy bank', amount: '$2906' } ]
+            credits: [ { bank: 'Happy bank', amount: 2906 } ]
         });
     });
 
@@ -54,7 +52,7 @@ describe('People resource', () => {
             email: 'john.connor@skynet.com',
             phone: '555-123-123',
             address: 'Test address',
-            credits: [{ bank: 'Happy bank', amount: '$2906' }]
+            credits: [{ bank: 'Happy bank', amount: 2906 }]
         }
         const peopleResponse = await apiClient.people().post(data);
 

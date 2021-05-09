@@ -28,7 +28,7 @@
             "type": "object",
             "properties": {
                 "bank": { "type": "string" },
-                "amount": { "type": "string" }
+                "amount": { "type": "integer" }
             },
             "required": ["bank", "amount"],
             "additionalProperties": false
