@@ -54,13 +54,14 @@ describe('People resource', () => {
             address: 'Test address',
             credits: [{ bank: 'Happy bank', amount: 2906 }]
         }
-        const peopleResponse = await apiClient.people().post(data);
-
-        // delete peopleResponse.data.id;
-        console.log(peopleResponse.data);
+        const postPeopleResponse = await apiClient.people().post(data);
         
-        expect(peopleResponse.status).toEqual(201);
-        expect(peopleResponse.data).toMatchObject(data);
+        expect(postPeopleResponse.status).toEqual(201);
+        expect(postPeopleResponse.data).toMatchObject(data);
+        expect(People.validatePostResponse(postPeopleResponse.data).errors).toEqual([]);
+
+        const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
+        expect(getPeopleResponse.data).toMatchObject(data);
     });
     
 });

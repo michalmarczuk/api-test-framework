@@ -21,6 +21,23 @@
         "type": "array",
         "items": {"$ref": "/getSchema"}
     },
+    "postSchema": {
+        "id": "/getSchema",
+        "type": "object",
+        "properties": {
+            "id": { "type": "string" },
+            "age": { "type": "integer" },
+            "name": { "type": "string" },
+            "gender": { "type": "string" },
+            "company": { "type": "string" },
+            "email": { "type": "string" },
+            "phone": { "type": "string" },
+            "address": { "type": "string" },
+            "credits": {"$ref": "/creditsSchema"}
+        },
+        "required": ["id", "age", "name", "gender", "company", "email", "phone", "address", "credits"],
+        "additionalProperties": false
+    },
     "creditsSchema": {
         "id": "/creditsSchema",
         "type": "array",
