@@ -63,5 +63,26 @@ describe('People resource', () => {
         const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
         expect(getPeopleResponse.data).toMatchObject(data);
     });
+
+    test('Post people required params missing', async () => {
+        const data = {
+            age: '',
+            name: '',
+            gender: '',
+            company: '',
+            email: '',
+            phone: '',
+            address: '',
+            credits: ''
+        }
+        const postPeopleResponse = await apiClient.people().post(data);
+
+        const expectedData = {
+            "status": 400,
+            "message": "Bad Request. Required params missing: name, age, gender, phone, address, credits"
+        }
+        expect(postPeopleResponse.status).toEqual(400);
+        expect(postPeopleResponse.data).toEqual(expectedData);
+    });
     
 });
