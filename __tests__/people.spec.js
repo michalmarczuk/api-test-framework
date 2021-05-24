@@ -47,7 +47,7 @@ describe('People resource', () => {
         const data = {
             age: 66,
             name: 'John Connor',
-            gender: 'Female',
+            gender: 'female',
             company: 'Skynet',
             email: 'john.connor@skynet.com',
             phone: '555-123-123',
@@ -55,7 +55,6 @@ describe('People resource', () => {
             credits: [{ bank: 'Happy bank', amount: 2906 }]
         }
         const postPeopleResponse = await apiClient.people().post(data);
-        
         expect(postPeopleResponse.status).toEqual(201);
         expect(postPeopleResponse.data).toMatchObject(data);
         expect(People.validatePostResponse(postPeopleResponse.data).errors).toEqual([]);
@@ -64,25 +63,30 @@ describe('People resource', () => {
         expect(getPeopleResponse.data).toMatchObject(data);
     });
 
-    test('Post people required params missing', async () => {
+    test.each([
+        [["age", "name", "gender", "email", "phone", "address", "credits"], "Missing param or invalid value: age, name, gender, email, phone, address, credits"],
+        [["gender"], "Missing param or invalid value: gender"]
+    ])('Post people required params missing', async (missingParams, expectedMessage) => {
         const data = {
-            age: '',
-            name: '',
-            gender: '',
-            company: '',
-            email: '',
-            phone: '',
-            address: '',
-            credits: ''
+            age: 66,
+            name: 'John Connor',
+            gender: 'female',
+            company: 'Skynet',
+            email: 'john.connor@skynet.com',
+            phone: '555-123-123',
+            address: 'Test address',
+            credits: [{ bank: 'Happy bank', amount: 2906 }]
         }
-        const postPeopleResponse = await apiClient.people().post(data);
+        missingParams.forEach(param => delete data[param]);
+        const postPeopleResponse = await apiClient.people().postRawData(data);
 
         const expectedData = {
             "status": 400,
-            "message": "Bad Request. Required params missing: name, age, gender, phone, address, credits"
+            "message": expectedMessage
         }
         expect(postPeopleResponse.status).toEqual(400);
         expect(postPeopleResponse.data).toEqual(expectedData);
     });
     
+    //TODO: Post people - record already added
 });
