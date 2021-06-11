@@ -8,7 +8,7 @@ describe('People resource', () => {
         apiClient = await getApiClientWithSession();
     });
 
-    test('Get all people', async () => {
+    test('[Get People] Get all clients', async () => {
         const getPeopleResponse = await apiClient.people().get();
 
         expect(getPeopleResponse.status).toEqual(200);
@@ -16,7 +16,7 @@ describe('People resource', () => {
         expect(People.validateGetAllResponse(getPeopleResponse.data).errors).toEqual([]);
     });
 
-    test('Get people by id', async () => {
+    test('[Get People] Get client by id', async () => {
         const peopleResponse = await apiClient.people().get('6044ee2a59be89b9b9d7ed1b');
 
         expect(peopleResponse.status).toEqual(200);
@@ -37,36 +37,29 @@ describe('People resource', () => {
         'invalid123',
         '!@#$%^&*(((',
         '-123',
-    ])('Get people by invalid id', async (id) => {
+    ])('[Get People] Get client by invalid id', async (id) => {
         const peopleResponse = await apiClient.people().get(id);
 
         expect(peopleResponse.status).toEqual(404);
     });
 
-    test('Post people', async () => {
-        const data = {
-            age: 66,
-            name: 'John Connor',
-            gender: 'female',
-            company: 'Skynet',
-            email: 'john.connor@skynet.com',
-            phone: '555-123-123',
-            address: 'Test address',
-            credits: [{ bank: 'Happy bank', amount: 2906 }]
-        }
-        const postPeopleResponse = await apiClient.people().post(data);
+    test('[Post People] Add client', async () => {
+        const postPeopleResponse = await apiClient.people().post();
+        const expectedData = JSON.parse(postPeopleResponse.config.data);
+
         expect(postPeopleResponse.status).toEqual(201);
-        expect(postPeopleResponse.data).toMatchObject(data);
+        expect(postPeopleResponse.data).toMatchObject(expectedData);
         expect(People.validatePostResponse(postPeopleResponse.data).errors).toEqual([]);
 
         const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
-        expect(getPeopleResponse.data).toMatchObject(data);
+
+        expect(getPeopleResponse.data).toMatchObject(expectedData);
     });
 
     test.each([
         [["age", "name", "gender", "email", "phone", "address", "credits"], "Missing param or invalid value: age, name, gender, email, phone, address, credits"],
         [["gender"], "Missing param or invalid value: gender"]
-    ])('Post people required params missing', async (missingParams, expectedMessage) => {
+    ])('[Post People] Required params missing', async (missingParams, expectedMessage) => {
         const data = {
             age: 66,
             name: 'John Connor',
@@ -79,14 +72,25 @@ describe('People resource', () => {
         }
         missingParams.forEach(param => delete data[param]);
         const postPeopleResponse = await apiClient.people().postRawData(data);
-
         const expectedData = {
             "status": 400,
             "message": expectedMessage
         }
+
         expect(postPeopleResponse.status).toEqual(400);
         expect(postPeopleResponse.data).toEqual(expectedData);
     });
     
-    //TODO: Post people - record already added
+    test('[Post People] Client already exists', async () => {
+        const postPeopleResponse = await apiClient.people().post();
+        const addedpeopleData = JSON.parse(postPeopleResponse.config.data);
+        const postAgainPeopleResponse = await apiClient.people().post(addedpeopleData);
+        const expectedData = {
+            "status": 409,
+            "message": "Person already exists"
+        }
+
+        expect(postAgainPeopleResponse.status).toEqual(409);
+        expect(postAgainPeopleResponse.data).toMatchObject(expectedData);
+    });
 });
