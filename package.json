@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__/unit",
+    "test:api": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__/api"
   },
   "repository": {
     "type": "git",
@@ -17,11 +18,10 @@
   },
   "homepage": "https://github.com/michalmarczuk/api-test-framework#readme",
   "dependencies": {
-    "ajv": "^7.2.1",
+    "ajv": "^7.2.4",
     "axios": "^0.21.1",
     "faker": "^5.5.3",
-    "jest-html-reporter": "^3.3.0",
-    "jsonschema": "^1.4.0"
+    "jest-html-reporter": "^3.3.0"
   },
   "type": "module",
   "devDependencies": {

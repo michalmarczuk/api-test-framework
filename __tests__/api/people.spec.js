@@ -1,5 +1,5 @@
-import People from '../lib/endpoints/people/people.js';
-import { getApiClientWithSession } from '../lib/flow.js';
+import People from '../../lib/endpoints/people/people.js';
+import { getApiClientWithSession } from '../../lib/flow.js';
 
 describe('People resource', () => {
     let apiClient;
@@ -13,7 +13,7 @@ describe('People resource', () => {
 
         expect(getPeopleResponse.status).toEqual(200);
         expect(getPeopleResponse.data.length).toBeGreaterThan(0);
-        expect(People.validateGetAllResponse(getPeopleResponse.data).errors).toEqual([]);
+        expect(People.validateGetAllResponse(getPeopleResponse.data)).toEqual(true);
     });
 
     test('[Get People] Get client by id', async () => {
@@ -49,7 +49,7 @@ describe('People resource', () => {
 
         expect(postPeopleResponse.status).toEqual(201);
         expect(postPeopleResponse.data).toMatchObject(expectedData);
-        expect(People.validatePostResponse(postPeopleResponse.data).errors).toEqual([]);
+        expect(People.validatePostResponse(postPeopleResponse.data)).toEqual(true);
 
         const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
 
@@ -83,8 +83,8 @@ describe('People resource', () => {
     
     test('[Post People] Client already exists', async () => {
         const postPeopleResponse = await apiClient.people().post();
-        const addedpeopleData = JSON.parse(postPeopleResponse.config.data);
-        const postAgainPeopleResponse = await apiClient.people().post(addedpeopleData);
+        const addedPeopleData = JSON.parse(postPeopleResponse.config.data);
+        const postAgainPeopleResponse = await apiClient.people().post(addedPeopleData);
         const expectedData = {
             "status": 409,
             "message": "Person already exists"
@@ -92,5 +92,24 @@ describe('People resource', () => {
 
         expect(postAgainPeopleResponse.status).toEqual(409);
         expect(postAgainPeopleResponse.data).toMatchObject(expectedData);
+    });
+
+    test('[Put People] Update client', async () => {
+        const postPeopleResponse = await apiClient.people().post();
+        const putPeopleResponse = await apiClient.people().put(postPeopleResponse.data.id);
+        const expectedData = JSON.parse(putPeopleResponse.config.data);
+
+        expect(putPeopleResponse.status).toEqual(200);
+        expect(putPeopleResponse.data).toMatchObject(expectedData);
+        expect(People.validatePutResponse(putPeopleResponse.data)).toEqual(true);
+
+        const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
+
+        expect(getPeopleResponse.data).toMatchObject(expectedData);
+    });
+
+    test('[Put People] Invalid ID', async () => {
+        const putPeopleResponse = await apiClient.people().put('non-existing-id');
+        expect(putPeopleResponse.status).toEqual(404);
     });
 });
