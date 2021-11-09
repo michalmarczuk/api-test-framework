@@ -5,7 +5,9 @@
   "main": "main.js",
   "scripts": {
     "test:unit": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__/unit",
-    "test:api": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__/api"
+    "test:unit:debug": "node --inspect-brk --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__/unit",
+    "test:api": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=__tests__/api",
+    "test:api:debug:chrome": "node --inspect-brk --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --testPathPattern=__tests__/api"
   },
   "repository": {
     "type": "git",

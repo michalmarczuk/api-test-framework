@@ -17,19 +17,19 @@ describe('People resource', () => {
     });
 
     test('[Get People] Get client by id', async () => {
-        const peopleResponse = await apiClient.people().get('6044ee2a59be89b9b9d7ed1b');
+        const peopleResponse = await apiClient.people().get('618a9f7505663884a4fa0859');
 
         expect(peopleResponse.status).toEqual(200);
         expect(peopleResponse.data).toMatchObject({
-            id: '6044ee2a59be89b9b9d7ed1b',
-            age: 35,
-            name: 'Arnold Thompson',
-            gender: 'male',
-            company: 'QIAO',
-            email: 'arnoldthompson@qiao.com',
-            phone: '+1 (820) 420-2603',
-            address: '579 Madison Street, Oneida, Virginia, 6531',
-            credits: [ { bank: 'Happy bank', amount: 2906 } ]
+            id: '618a9f7505663884a4fa0859',
+            age: 22,
+            name: 'Robles Johnston',
+            gender: 'Male',
+            company: 'BOSTONIC',
+            email: 'roblesjohnston@bostonic.com',
+            phone: '871-496-200',
+            address: '533 Hastings Street, Nord, Wyoming, 7009',
+            credits: [ { bank: 'National Bank', amount: 1518 } ]
         });
     });
 
@@ -52,7 +52,6 @@ describe('People resource', () => {
         expect(People.validatePostResponse(postPeopleResponse.data)).toEqual(true);
 
         const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
-
         expect(getPeopleResponse.data).toMatchObject(expectedData);
     });
 
@@ -104,12 +103,25 @@ describe('People resource', () => {
         expect(People.validatePutResponse(putPeopleResponse.data)).toEqual(true);
 
         const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
-
         expect(getPeopleResponse.data).toMatchObject(expectedData);
     });
 
     test('[Put People] Invalid ID', async () => {
         const putPeopleResponse = await apiClient.people().put('non-existing-id');
         expect(putPeopleResponse.status).toEqual(404);
+    });
+
+    test('Put People: Client already exists', async () => {
+        const postPeopleResponse = await apiClient.people().post();
+        const existingClientData = (await apiClient.people().get()).data[0];
+        delete existingClientData.id;
+        const putPeopleResponse = await apiClient.people().put(postPeopleResponse.data.id, existingClientData);
+        const expectedData = {
+            "status": 409,
+            "message": "Person already exists"
+        }
+
+        expect(putPeopleResponse.status).toEqual(409);
+        expect(putPeopleResponse.data).toMatchObject(expectedData);
     });
 });
