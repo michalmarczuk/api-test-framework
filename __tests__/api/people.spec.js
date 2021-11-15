@@ -1,26 +1,26 @@
-import People from '../../lib/endpoints/people/people.js';
+import Customer from '../../lib/endpoints/customer/customer.js';
 import { getApiClientWithSession } from '../../lib/flow.js';
 
-describe('People resource', () => {
+describe('Customer resource', () => {
     let apiClient;
 
     beforeEach(async () => {
         apiClient = await getApiClientWithSession();
     });
 
-    test('[Get People] Get all clients', async () => {
-        const getPeopleResponse = await apiClient.people().get();
+    test('Customer GET all', async () => {
+        const getCustomerResponse = await apiClient.customer().get();
 
-        expect(getPeopleResponse.status).toEqual(200);
-        expect(getPeopleResponse.data.length).toBeGreaterThan(0);
-        expect(People.validateGetAllResponse(getPeopleResponse.data)).toEqual(true);
+        expect(getCustomerResponse.status).toEqual(200);
+        expect(getCustomerResponse.data.length).toBeGreaterThan(0);
+        expect(Customer.validateGetAllResponse(getCustomerResponse.data)).toEqual(true);
     });
 
-    test('[Get People] Get client by id', async () => {
-        const peopleResponse = await apiClient.people().get('618a9f7505663884a4fa0859');
+    test('Customer GET by id', async () => {
+        const getCustomerResponse = await apiClient.customer().get('618a9f7505663884a4fa0859');
 
-        expect(peopleResponse.status).toEqual(200);
-        expect(peopleResponse.data).toMatchObject({
+        expect(getCustomerResponse.status).toEqual(200);
+        expect(getCustomerResponse.data).toMatchObject({
             id: '618a9f7505663884a4fa0859',
             age: 22,
             name: 'Robles Johnston',
@@ -37,28 +37,28 @@ describe('People resource', () => {
         'invalid123',
         '!@#$%^&*(((',
         '-123',
-    ])('[Get People] Get client by invalid id', async (id) => {
-        const peopleResponse = await apiClient.people().get(id);
+    ])('Customer GET by invalid id', async (id) => {
+        const getCustomerResponse = await apiClient.customer().get(id);
 
-        expect(peopleResponse.status).toEqual(404);
+        expect(getCustomerResponse.status).toEqual(404);
     });
 
-    test('[Post People] Add client', async () => {
-        const postPeopleResponse = await apiClient.people().post();
-        const expectedData = JSON.parse(postPeopleResponse.config.data);
+    test('Customer POST', async () => {
+        const postCustomerResponse = await apiClient.customer().post();
+        const expectedData = JSON.parse(postCustomerResponse.config.data);
 
-        expect(postPeopleResponse.status).toEqual(201);
-        expect(postPeopleResponse.data).toMatchObject(expectedData);
-        expect(People.validatePostResponse(postPeopleResponse.data)).toEqual(true);
+        expect(postCustomerResponse.status).toEqual(201);
+        expect(postCustomerResponse.data).toMatchObject(expectedData);
+        expect(Customer.validatePostResponse(postCustomerResponse.data)).toEqual(true);
 
-        const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
-        expect(getPeopleResponse.data).toMatchObject(expectedData);
+        const getClientResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        expect(getClientResponse.data).toMatchObject(expectedData);
     });
 
     test.each([
         [["age", "name", "gender", "email", "phone", "address", "credits"], "Missing param or invalid value: age, name, gender, email, phone, address, credits"],
         [["gender"], "Missing param or invalid value: gender"]
-    ])('[Post People] Required params missing', async (missingParams, expectedMessage) => {
+    ])('Customer POST required params missing', async (missingParams, expectedMessage) => {
         const data = {
             age: 66,
             name: 'John Connor',
@@ -70,58 +70,58 @@ describe('People resource', () => {
             credits: [{ bank: 'Happy bank', amount: 2906 }]
         }
         missingParams.forEach(param => delete data[param]);
-        const postPeopleResponse = await apiClient.people().postRawData(data);
+        const postCustomerResponse = await apiClient.customer().postRawData(data);
         const expectedData = {
             "status": 400,
             "message": expectedMessage
         }
 
-        expect(postPeopleResponse.status).toEqual(400);
-        expect(postPeopleResponse.data).toEqual(expectedData);
+        expect(postCustomerResponse.status).toEqual(400);
+        expect(postCustomerResponse.data).toEqual(expectedData);
     });
     
-    test('[Post People] Client already exists', async () => {
-        const postPeopleResponse = await apiClient.people().post();
-        const addedPeopleData = JSON.parse(postPeopleResponse.config.data);
-        const postAgainPeopleResponse = await apiClient.people().post(addedPeopleData);
+    test('Customer POST client already exists', async () => {
+        const postCustomerResponse = await apiClient.customer().post();
+        const addedCustomerData = JSON.parse(postCustomerResponse.config.data);
+        const postAgainCustomerResponse = await apiClient.customer().post(addedCustomerData);
         const expectedData = {
             "status": 409,
-            "message": "Person already exists"
+            "message": "Customer already exists"
         }
 
-        expect(postAgainPeopleResponse.status).toEqual(409);
-        expect(postAgainPeopleResponse.data).toMatchObject(expectedData);
+        expect(postAgainCustomerResponse.status).toEqual(409);
+        expect(postAgainCustomerResponse.data).toMatchObject(expectedData);
     });
 
-    test('[Put People] Update client', async () => {
-        const postPeopleResponse = await apiClient.people().post();
-        const putPeopleResponse = await apiClient.people().put(postPeopleResponse.data.id);
-        const expectedData = JSON.parse(putPeopleResponse.config.data);
+    test('Customer PUT', async () => {
+        const postCustomerResponse = await apiClient.customer().post();
+        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id);
+        const expectedData = JSON.parse(putCustomerResponse.config.data);
 
-        expect(putPeopleResponse.status).toEqual(200);
-        expect(putPeopleResponse.data).toMatchObject(expectedData);
-        expect(People.validatePutResponse(putPeopleResponse.data)).toEqual(true);
+        expect(putCustomerResponse.status).toEqual(200);
+        expect(putCustomerResponse.data).toMatchObject(expectedData);
+        expect(Customer.validatePutResponse(putCustomerResponse.data)).toEqual(true);
 
-        const getPeopleResponse = await apiClient.people().get(postPeopleResponse.data.id);
-        expect(getPeopleResponse.data).toMatchObject(expectedData);
+        const getCustomerResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        expect(getCustomerResponse.data).toMatchObject(expectedData);
     });
 
-    test('[Put People] Invalid ID', async () => {
-        const putPeopleResponse = await apiClient.people().put('non-existing-id');
-        expect(putPeopleResponse.status).toEqual(404);
+    test('Customer PUT invalid id', async () => {
+        const putCustomerResponse = await apiClient.customer().put('non-existing-id');
+        expect(putCustomerResponse.status).toEqual(404);
     });
 
-    test('Put People: Client already exists', async () => {
-        const postPeopleResponse = await apiClient.people().post();
-        const existingClientData = (await apiClient.people().get()).data[0];
+    test('Customer PUT client already exists', async () => {
+        const postCustomerResponse = await apiClient.customer().post();
+        const existingClientData = (await apiClient.customer().get()).data[0];
         delete existingClientData.id;
-        const putPeopleResponse = await apiClient.people().put(postPeopleResponse.data.id, existingClientData);
+        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, existingClientData);
         const expectedData = {
             "status": 409,
-            "message": "Person already exists"
+            "message": "Customer already exists"
         }
 
-        expect(putPeopleResponse.status).toEqual(409);
-        expect(putPeopleResponse.data).toMatchObject(expectedData);
+        expect(putCustomerResponse.status).toEqual(409);
+        expect(putCustomerResponse.data).toMatchObject(expectedData);
     });
 });

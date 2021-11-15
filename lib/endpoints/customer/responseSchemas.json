@@ -1,23 +1,23 @@
 [
     { 
         "$id": "getSchema",
-        "$ref": "peopleCommonSchema" 
+        "$ref": "customerCommonSchema" 
     },
     {
         "$id": "getAllSchema",
         "type": "array",
-        "items": { "$ref": "peopleCommonSchema" }
+        "items": { "$ref": "customerCommonSchema" }
     },
     { 
         "$id": "postSchema",
-        "$ref": "peopleCommonSchema" 
+        "$ref": "customerCommonSchema" 
     },
     { 
         "$id": "putSchema",
-        "$ref": "peopleCommonSchema" 
+        "$ref": "customerCommonSchema" 
     },
     {
-        "$id": "peopleCommonSchema",
+        "$id": "customerCommonSchema",
         "type": "object",
         "properties": {
             "id": { "type": "string" },

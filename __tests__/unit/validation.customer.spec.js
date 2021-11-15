@@ -1,48 +1,48 @@
-import People from '../../lib/endpoints/people/people.js';
+import Customer from '../../lib/endpoints/customer/customer.js';
 
-describe('Response validation for people resource', () => {
+describe('Response validation for customer resource', () => {
     beforeEach(async () => {
-        testData = sampleCorrectPeopleDataList();
+        testData = sampleCorrectCustomerDataList();
     });
 
     test('[Get] Invalid type', async() => {
         testData[0].age = '30';
 
-        expect(People.validateGetResponse(testData[0])[0].message).toEqual('should be integer');
+        expect(Customer.validateGetResponse(testData[0])[0].message).toEqual('should be integer');
     });
 
     test('[Get] Additional param', async() => {
         testData[0].newParam = '123';
 
-        expect(People.validateGetResponse(testData[0])[0].message).toEqual('should NOT have additional properties');
+        expect(Customer.validateGetResponse(testData[0])[0].message).toEqual('should NOT have additional properties');
     });
 
     test('[Get] Lack of required param', async() => {
         delete testData[0].company;
 
-        expect(People.validateGetResponse(testData[0])[0].message).toEqual('should have required property \'company\'');
+        expect(Customer.validateGetResponse(testData[0])[0].message).toEqual('should have required property \'company\'');
     });
 
     test('[Get All] Invalid type', async() => {
         testData[0].age = '30';
 
-        expect(People.validateGetAllResponse(testData)[0].message).toEqual('should be integer');
+        expect(Customer.validateGetAllResponse(testData)[0].message).toEqual('should be integer');
     });
 
     test('[Get All] Additional param', async() => {
         testData[0].newParam = '123';
 
-        expect(People.validateGetAllResponse(testData)[0].message).toEqual('should NOT have additional properties');
+        expect(Customer.validateGetAllResponse(testData)[0].message).toEqual('should NOT have additional properties');
     });
 
     test('[Get All] Lack of required param', async() => {
         delete testData[0].company;
 
-        expect(People.validateGetAllResponse(testData)[0].message).toEqual('should have required property \'company\'');
+        expect(Customer.validateGetAllResponse(testData)[0].message).toEqual('should have required property \'company\'');
     });
 
     let testData;
-    const sampleCorrectPeopleDataList = () => [
+    const sampleCorrectCustomerDataList = () => [
         {
             "id": "6044ee2a2519c64279eafb9f",
             "age": 31,
