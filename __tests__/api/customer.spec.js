@@ -72,7 +72,7 @@ describe('Customer resource', () => {
     ])('Customer POST required params missing', async (missingParams, expectedMessage) => {
         const data = Customer.getDefaultData();
         missingParams.forEach(param => delete data[param]);
-        const postCustomerResponse = await apiClient.customer().post(data, true);
+        const postCustomerResponse = await apiClient.customer().post({ data, rawData: true });
         const expectedData = {
             "status": 400,
             "message": expectedMessage
@@ -85,7 +85,7 @@ describe('Customer resource', () => {
     test('Customer POST client already exists', async () => {
         const postCustomerResponse = await apiClient.customer().post();
         const addedCustomerData = JSON.parse(postCustomerResponse.config.data);
-        const postAgainCustomerResponse = await apiClient.customer().post(addedCustomerData);
+        const postAgainCustomerResponse = await apiClient.customer().post({ data: addedCustomerData });
         const expectedData = {
             "status": 409,
             "message": "Customer already exists"
@@ -99,7 +99,7 @@ describe('Customer resource', () => {
         [{naame: 'John'}],
         [{Agge: 123, UknownedParameter: 'xyz'}],
     ])('Customer POST uknowned parameters', async (invalidParams) => {
-        const postCustomerResponse = await apiClient.customer().post(invalidParams);
+        const postCustomerResponse = await apiClient.customer().post({ data: invalidParams });
 
         expect(postCustomerResponse.status).toEqual(201);
         const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
@@ -113,7 +113,7 @@ describe('Customer resource', () => {
         [{age: 'John'}],
         [{age: 'John', name: '1', gender: 'Gender', company: 123, email: 'abc', phone: '9-2-11', address: 678, credits: 'credits'}],
     ])('Customer POST invalid parameters values', async (invalidParamsValues) => {
-        const postCustomerResponse = await apiClient.customer().post(invalidParamsValues);
+        const postCustomerResponse = await apiClient.customer().post({ data: invalidParamsValues });
         const expectedData = {
             "status": 400,
             "message": `Missing param or invalid value: ${Object.keys(invalidParamsValues).join(', ')}`
@@ -125,7 +125,7 @@ describe('Customer resource', () => {
 
     test('Customer PUT', async () => {
         const postCustomerResponse = await apiClient.customer().post();
-        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id);
+        const putCustomerResponse = await apiClient.customer().put({ id: postCustomerResponse.data.id });
         const expectedData = JSON.parse(putCustomerResponse.config.data);
 
         expect(putCustomerResponse.status).toEqual(200);
@@ -137,7 +137,7 @@ describe('Customer resource', () => {
     });
 
     test('Customer PUT invalid id', async () => {
-        const putCustomerResponse = await apiClient.customer().put('non-existing-id');
+        const putCustomerResponse = await apiClient.customer().put({ id: 'non-existing-id' });
         expect(putCustomerResponse.status).toEqual(404);
     });
 
@@ -148,7 +148,7 @@ describe('Customer resource', () => {
         const data = Customer.getDefaultData();
         missingParams.forEach(param => delete data[param]);
         const postCustomerResponse = await apiClient.customer().post();
-        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, data, true);
+        const putCustomerResponse = await apiClient.customer().put({ id: postCustomerResponse.data.id, data, rawData: true });
         const expectedData = {
             "status": 400,
             "message": expectedMessage
@@ -162,7 +162,7 @@ describe('Customer resource', () => {
         const postCustomerResponse = await apiClient.customer().post();
         const existingClientData = (await apiClient.customer().get()).data[0];
         delete existingClientData.id;
-        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, existingClientData);
+        const putCustomerResponse = await apiClient.customer().put({ id: postCustomerResponse.data.id, data: existingClientData });
         const expectedData = {
             "status": 409,
             "message": "Customer already exists"
@@ -177,7 +177,7 @@ describe('Customer resource', () => {
         [{Agge: 123, UknownedParameter: 'xyz'}],
     ])('Customer PUT uknowned parameters', async (invalidParams) => {
         const postCustomerResponse = await apiClient.customer().post();
-        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, invalidParams);
+        const putCustomerResponse = await apiClient.customer().put({ id: postCustomerResponse.data.id, data: invalidParams });
 
         expect(putCustomerResponse.status).toEqual(200);
         const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
@@ -192,7 +192,7 @@ describe('Customer resource', () => {
         [{age: 'John', name: '1', gender: 'Gender', company: 123, email: 'abc', phone: '9-2-11', address: 678, credits: 'credits'}],
     ])('Customer PUT invalid parameters values', async (invalidParamsValues) => {
         const postCustomerResponse = await apiClient.customer().post();
-        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, invalidParamsValues);
+        const putCustomerResponse = await apiClient.customer().put({ id: postCustomerResponse.data.id, data: invalidParamsValues });
         const expectedData = {
             "status": 400,
             "message": `Missing param or invalid value: ${Object.keys(invalidParamsValues).join(', ')}`
@@ -205,7 +205,7 @@ describe('Customer resource', () => {
     test('Customer PATCH', async () => {
         const postCustomerResponse = await apiClient.customer().post();
 
-        const patchCustomerResponse = await apiClient.customer().patch(postCustomerResponse.data.id, { name: Customer.getDefaultData().name });
+        const patchCustomerResponse = await apiClient.customer().patch({ id: postCustomerResponse.data.id, data: { name: Customer.getDefaultData().name } });
         const expectedData = JSON.parse(patchCustomerResponse.config.data);
 
         expect(patchCustomerResponse.status).toEqual(200);
@@ -217,7 +217,7 @@ describe('Customer resource', () => {
     });
 
     test('Customer PATCH invalid id', async () => {
-        const patchCustomerResponse = await apiClient.customer().patch('non-existing-id');
+        const patchCustomerResponse = await apiClient.customer().patch({ id: 'non-existing-id' });
         expect(patchCustomerResponse.status).toEqual(404);
     });
 
@@ -225,7 +225,7 @@ describe('Customer resource', () => {
         const postCustomerResponse = await apiClient.customer().post();
         const existingClientData = (await apiClient.customer().get()).data[0];
         delete existingClientData.id;
-        const patchCustomerResponse = await apiClient.customer().patch(postCustomerResponse.data.id, { name: existingClientData.name });
+        const patchCustomerResponse = await apiClient.customer().patch({ id: postCustomerResponse.data.id, data: { name: existingClientData.name } });
         const expectedData = {
             "status": 409,
             "message": "Customer already exists"
@@ -240,7 +240,7 @@ describe('Customer resource', () => {
         [{Agge: 123, UknownedParameter: 'xyz'}],
     ])('Customer PATCH uknowned parameters', async (invalidParams) => {
         const postCustomerResponse = await apiClient.customer().post();
-        const patchCustomerResponse = await apiClient.customer().patch(postCustomerResponse.data.id, invalidParams);
+        const patchCustomerResponse = await apiClient.customer().patch({ id: postCustomerResponse.data.id, data: invalidParams });
 
         expect(patchCustomerResponse.status).toEqual(200);
         const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
@@ -252,10 +252,10 @@ describe('Customer resource', () => {
 
     test.each([
         [{age: 'John'}],
-        [{age: 'John', name: '1', gender: 'Gender', company: 123, email: 'abc', phone: '9-2-11', address: 678, credits: 'credits'}],
+        [{age: 'John', name: '1', gender: 'Gender', email: 'abc', phone: '9-2-11', address: 678, credits: 'credits'}],
     ])('Customer PATCH invalid parameters values', async (invalidParamsValues) => {
         const postCustomerResponse = await apiClient.customer().post();
-        const patchCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, invalidParamsValues);
+        const patchCustomerResponse = await apiClient.customer().patch({ id: postCustomerResponse.data.id, data: invalidParamsValues });
         const expectedData = {
             "status": 400,
             "message": `Missing param or invalid value: ${Object.keys(invalidParamsValues).join(', ')}`
