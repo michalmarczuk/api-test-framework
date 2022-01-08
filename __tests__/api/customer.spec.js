@@ -265,5 +265,18 @@ describe('Customer resource', () => {
         expect(patchCustomerResponse.data).toMatchObject(expectedData);
     });
 
-    // Parameters handling - GET
+    test('Customer DELETE', async () => {
+        const customerId = (await apiClient.customer().post()).data.id;
+
+        const deleteCustomerResponse = await apiClient.customer().delete({ id: customerId });
+        expect(deleteCustomerResponse.status).toEqual(200);
+
+        const getClientResponse = await apiClient.customer().get({ id: customerId });
+        expect(getClientResponse.status).toEqual(404);
+    });
+
+    test('Customer DELETE invalid id', async () => {
+        const deleteCustomerResponse = await apiClient.customer().delete({ id: 'InvalidID' });
+        expect(deleteCustomerResponse.status).toEqual(404);
+    });
 });
