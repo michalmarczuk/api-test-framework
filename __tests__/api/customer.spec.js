@@ -16,8 +16,19 @@ describe('Customer resource', () => {
         expect(Customer.validateGetAllResponse(getCustomerResponse.data)).toEqual(true);
     });
 
+    test.each([
+        [{ name: 'Krista Rohan' }, c => c.name === 'Krista Rohan'],
+        [{ age_gte: 90 }, c => c.age >= 90],
+        [{ gender: 'Female',  age_lte: 25}, c => c.age <= 25 && c.gender === 'Female'],
+        [{ email_like: 'gmail' }, c => c.email.includes('gmail')],
+        [{ name: 'Zero results' }, c => c.name.includes('Zero results')],
+    ])('Customer GET filtered', async (filters, assertFunction) => {
+        const getCustomerResponse = await apiClient.customer().get({ filters });
+        expect(getCustomerResponse.data.length).toEqual(getCustomerResponse.data.filter(assertFunction).length);
+    });
+
     test('Customer GET by id', async () => {
-        const getCustomerResponse = await apiClient.customer().get('618a9f7505663884a4fa0859');
+        const getCustomerResponse = await apiClient.customer().get({ id: '618a9f7505663884a4fa0859' });
 
         expect(getCustomerResponse.status).toEqual(200);
         expect(getCustomerResponse.data).toMatchObject({
@@ -38,7 +49,7 @@ describe('Customer resource', () => {
         '!@#$%^&*(((',
         '-123',
     ])('Customer GET by invalid id', async (id) => {
-        const getCustomerResponse = await apiClient.customer().get(id);
+        const getCustomerResponse = await apiClient.customer().get({ id });
 
         expect(getCustomerResponse.status).toEqual(404);
     });
@@ -51,7 +62,7 @@ describe('Customer resource', () => {
         expect(postCustomerResponse.data).toMatchObject(expectedData);
         expect(Customer.validatePostResponse(postCustomerResponse.data)).toEqual(true);
 
-        const getClientResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        const getClientResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
         expect(getClientResponse.data).toMatchObject(expectedData);
     });
 
@@ -91,7 +102,7 @@ describe('Customer resource', () => {
         const postCustomerResponse = await apiClient.customer().post(invalidParams);
 
         expect(postCustomerResponse.status).toEqual(201);
-        const getCustomerResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
         
         for (const invalidParam of Object.keys(invalidParams)) {
             expect(getCustomerResponse.data).not.toHaveProperty(invalidParam);
@@ -121,7 +132,7 @@ describe('Customer resource', () => {
         expect(putCustomerResponse.data).toMatchObject(expectedData);
         expect(Customer.validatePutResponse(putCustomerResponse.data)).toEqual(true);
 
-        const getCustomerResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
         expect(getCustomerResponse.data).toMatchObject(expectedData);
     });
 
@@ -169,11 +180,26 @@ describe('Customer resource', () => {
         const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, invalidParams);
 
         expect(putCustomerResponse.status).toEqual(200);
-        const getCustomerResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
         
         for (const invalidParam of Object.keys(invalidParams)) {
             expect(getCustomerResponse.data).not.toHaveProperty(invalidParam);
         }
+    });
+
+    test.each([
+        [{age: 'John'}],
+        [{age: 'John', name: '1', gender: 'Gender', company: 123, email: 'abc', phone: '9-2-11', address: 678, credits: 'credits'}],
+    ])('Customer PUT invalid parameters values', async (invalidParamsValues) => {
+        const postCustomerResponse = await apiClient.customer().post();
+        const putCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, invalidParamsValues);
+        const expectedData = {
+            "status": 400,
+            "message": `Missing param or invalid value: ${Object.keys(invalidParamsValues).join(', ')}`
+        }
+
+        expect(putCustomerResponse.status).toEqual(expectedData.status);
+        expect(putCustomerResponse.data).toMatchObject(expectedData);
     });
 
     test('Customer PATCH', async () => {
@@ -186,7 +212,7 @@ describe('Customer resource', () => {
         expect(patchCustomerResponse.data).toMatchObject(expectedData);
         expect(Customer.validatePutResponse(patchCustomerResponse.data)).toEqual(true);
 
-        const getCustomerResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
         expect(getCustomerResponse.data).toMatchObject(expectedData);
     });
 
@@ -217,12 +243,27 @@ describe('Customer resource', () => {
         const patchCustomerResponse = await apiClient.customer().patch(postCustomerResponse.data.id, invalidParams);
 
         expect(patchCustomerResponse.status).toEqual(200);
-        const getCustomerResponse = await apiClient.customer().get(postCustomerResponse.data.id);
+        const getCustomerResponse = await apiClient.customer().get({ id: postCustomerResponse.data.id });
         
         for (const invalidParam of Object.keys(invalidParams)) {
             expect(getCustomerResponse.data).not.toHaveProperty(invalidParam);
         }
     });
-    //TODO: invalid params value for PUT, POST, PATCH
+
+    test.each([
+        [{age: 'John'}],
+        [{age: 'John', name: '1', gender: 'Gender', company: 123, email: 'abc', phone: '9-2-11', address: 678, credits: 'credits'}],
+    ])('Customer PATCH invalid parameters values', async (invalidParamsValues) => {
+        const postCustomerResponse = await apiClient.customer().post();
+        const patchCustomerResponse = await apiClient.customer().put(postCustomerResponse.data.id, invalidParamsValues);
+        const expectedData = {
+            "status": 400,
+            "message": `Missing param or invalid value: ${Object.keys(invalidParamsValues).join(', ')}`
+        }
+
+        expect(patchCustomerResponse.status).toEqual(expectedData.status);
+        expect(patchCustomerResponse.data).toMatchObject(expectedData);
+    });
+
     // Parameters handling - GET
 });
